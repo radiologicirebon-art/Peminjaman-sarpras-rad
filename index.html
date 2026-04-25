@@ -3,46 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SARPRAS Radiologi — Sistem Peminjaman Terintegrasi</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>SARPRAS Radiologi — Sistem Peminjaman Terintegrasi v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 <style>
   :root {
     --orange: #f58320;
+    --orange-dark: #d96d10;
+    --orange-glow: rgba(245,131,32,0.18);
     --teal: #109b9f;
-    --black: #000000;
+    --teal-dark: #0d7a7e;
+    --teal-glow: rgba(16,155,159,0.15);
+    --black: #0a0a0a;
+    --surface: #111518;
+    --surface-2: #181d22;
+    --surface-3: #1e252c;
+    --surface-4: #242d35;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
     --white: #ffffff;
-    --orange-light: #fff4e8;
-    --teal-light: #e6f7f7;
-    --gray: #f5f5f5;
-    --gray-mid: #e0e0e0;
-    --gray-dark: #888;
-    --text: #1a1a1a;
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-    --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: #f8f8f8;
-    color: var(--text);
-    min-height: 100vh;
+    --text: #edf0f2;
+    --text-muted: #7a8a96;
+    --text-dim: #4a5a66;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
   }
 
-  /* ── TOP HEADER ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--black);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── AMBIENT GLOW BG ── */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .ambient-bg::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(245,131,32,0.06) 0%, transparent 70%);
+    top: -200px;
+    left: -100px;
+    animation: driftA 20s ease-in-out infinite alternate;
+  }
+  .ambient-bg::after {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(16,155,159,0.06) 0%, transparent 70%);
+    bottom: -150px;
+    right: -100px;
+    animation: driftB 18s ease-in-out infinite alternate;
+  }
+  @keyframes driftA { from { transform: translate(0,0); } to { transform: translate(60px, 40px); } }
+  @keyframes driftB { from { transform: translate(0,0); } to { transform: translate(-40px, -60px); } }
+
+  /* ── SITE HEADER ── */
   .site-header {
-    background: var(--white);
-    border-bottom: 3px solid var(--orange);
+    background: rgba(17,21,24,0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
     padding: 0 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 68px;
+    height: 64px;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 16px rgba(245,131,32,0.10);
   }
   .header-brand {
     display: flex;
@@ -50,230 +109,263 @@
     gap: 14px;
   }
   .brand-icon {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     background: linear-gradient(135deg, var(--orange), var(--teal));
-    border-radius: 12px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 2px 8px rgba(245,131,32,0.25);
+    font-size: 18px;
+    box-shadow: 0 0 20px var(--orange-glow);
+    flex-shrink: 0;
   }
   .brand-text h1 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--teal);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--white);
     letter-spacing: 0.5px;
     line-height: 1.1;
   }
   .brand-text p {
-    font-size: 11px;
-    color: var(--gray-dark);
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
   }
+
   .header-nav {
     display: flex;
-    gap: 4px;
+    gap: 2px;
+    background: var(--surface-2);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
   }
   .nav-btn {
-    padding: 8px 16px;
+    padding: 7px 16px;
     border-radius: 8px;
     border: none;
     background: transparent;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
-    font-weight: 700;
-    color: var(--gray-dark);
+    font-weight: 600;
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
   }
-  .nav-btn:hover { background: var(--gray); color: var(--text); }
-  .nav-btn.active { background: var(--orange); color: white; }
-  .nav-btn.active-teal { background: var(--teal); color: white; }
+  .nav-btn:hover { color: var(--text); background: var(--surface-3); }
+  .nav-btn.active { background: var(--orange); color: white; box-shadow: 0 0 16px var(--orange-glow); }
+  .nav-btn.active-teal { background: var(--teal); color: white; box-shadow: 0 0 16px var(--teal-glow); }
 
   /* ── MAIN LAYOUT ── */
   .main-wrap {
-    max-width: 1280px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 28px 20px 60px;
+    padding: 32px 24px 80px;
+    position: relative;
+    z-index: 1;
   }
 
   /* ── PAGE SECTIONS ── */
   .page-section { display: none; }
-  .page-section.active { display: block; }
+  .page-section.active { display: block; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-  /* ── DASHBOARD ── */
-  .dashboard-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
+  /* ── PAGE TITLE ── */
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--white);
     margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .dashboard-title span { color: var(--orange); }
+  .page-title .accent { color: var(--orange); }
+  .page-title .accent-teal { color: var(--teal); }
 
+  /* ── STAT GRID ── */
   .stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
   }
   .stat-card {
-    background: var(--white);
-    border-radius: 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 20px 22px;
-    box-shadow: var(--shadow);
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: transform 0.2s;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
   }
-  .stat-card:hover { transform: translateY(-2px); }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .stat-card.orange-card::after { background: radial-gradient(ellipse at top left, rgba(245,131,32,0.08), transparent 60%); }
+  .stat-card.teal-card::after   { background: radial-gradient(ellipse at top left, rgba(16,155,159,0.08), transparent 60%); }
+  .stat-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .stat-card:hover::after { opacity: 1; }
+
   .stat-icon {
-    width: 52px; height: 52px;
-    border-radius: 14px;
+    width: 50px; height: 50px;
+    border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
     flex-shrink: 0;
   }
-  .stat-icon.orange { background: var(--orange-light); }
-  .stat-icon.teal   { background: var(--teal-light); }
-  .stat-icon.black  { background: #f0f0f0; }
-  .stat-info h3 { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
-  .stat-info p  { font-size: 12px; color: var(--gray-dark); font-weight: 600; margin-top: 3px; }
+  .stat-icon.orange { background: rgba(245,131,32,0.12); border: 1px solid rgba(245,131,32,0.2); }
+  .stat-icon.teal   { background: rgba(16,155,159,0.12); border: 1px solid rgba(16,155,159,0.2); }
+  .stat-icon.neutral{ background: rgba(255,255,255,0.05); border: 1px solid var(--border); }
+
+  .stat-info h3 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: var(--white); line-height: 1; }
+  .stat-info p  { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
 
   /* ── TRACKING CARD ── */
   .tracking-card {
-    background: linear-gradient(135deg, var(--teal), #0d7a7e);
-    border-radius: 20px;
-    padding: 28px 32px;
+    background: linear-gradient(135deg, var(--teal-dark) 0%, rgba(13,122,126,0.7) 100%);
+    border: 1px solid rgba(16,155,159,0.3);
+    border-radius: var(--radius-lg);
+    padding: 26px 30px;
     color: white;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(16,155,159,0.30);
+    box-shadow: 0 8px 32px rgba(16,155,159,0.20);
   }
   .tracking-card::before {
-    content: '🔬';
+    content: '';
     position: absolute;
-    right: 24px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 80px;
-    opacity: 0.12;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
   }
   .tracking-card h2 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 22px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
     font-weight: 700;
     margin-bottom: 18px;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    opacity: 0.9;
   }
   .tracking-pulse {
-    width: 10px; height: 10px;
+    width: 8px; height: 8px;
     background: #7fffd4;
     border-radius: 50%;
     animation: pulse-ring 1.5s ease-in-out infinite;
     flex-shrink: 0;
   }
   @keyframes pulse-ring {
-    0%,100% { box-shadow: 0 0 0 0 rgba(127,255,212,0.6); }
+    0%,100% { box-shadow: 0 0 0 0 rgba(127,255,212,0.7); }
     50% { box-shadow: 0 0 0 8px rgba(127,255,212,0); }
   }
   .tracking-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
   }
   .tracking-item {
-    background: rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 14px 18px;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,0.1);
   }
   .tracking-item .label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    opacity: 0.75;
-    margin-bottom: 4px;
+    opacity: 0.6;
+    margin-bottom: 5px;
   }
   .tracking-item .value {
-    font-size: 15px;
-    font-weight: 800;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
     line-height: 1.3;
   }
-  .tracking-item .value.status-available { color: #7fffd4; }
-  .tracking-item .value.status-borrowed  { color: #ffd580; }
+  .status-available { color: #7fffd4; }
+  .status-borrowed  { color: #ffd580; }
 
-  /* ── RECENT TABLE ── */
+  /* ── SECTION CARD ── */
   .section-card {
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     margin-bottom: 24px;
   }
   .section-card-header {
     padding: 18px 24px;
-    border-bottom: 2px solid var(--gray);
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
   .section-card-header h3 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 17px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    color: var(--text);
   }
   .badge {
     padding: 3px 10px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
   }
-  .badge-orange { background: var(--orange-light); color: var(--orange); }
-  .badge-teal   { background: var(--teal-light);   color: var(--teal); }
+  .badge-orange { background: rgba(245,131,32,0.15); color: var(--orange); border: 1px solid rgba(245,131,32,0.25); }
+  .badge-teal   { background: rgba(16,155,159,0.15); color: var(--teal);   border: 1px solid rgba(16,155,159,0.25); }
 
+  /* ── DATA TABLE ── */
   .data-table { width: 100%; border-collapse: collapse; }
   .data-table th {
-    background: var(--gray);
+    background: var(--surface-3);
     padding: 10px 16px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--gray-dark);
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
     text-align: left;
   }
   .data-table td {
     padding: 13px 16px;
     font-size: 13px;
-    border-bottom: 1px solid var(--gray);
+    border-bottom: 1px solid var(--border);
     vertical-align: middle;
+    color: var(--text);
   }
   .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: #fafafa; }
+  .data-table tbody tr { transition: background 0.15s; }
+  .data-table tbody tr:hover td { background: var(--surface-3); }
+
   .pill {
     display: inline-block;
     padding: 3px 10px;
@@ -281,49 +373,59 @@
     font-size: 11px;
     font-weight: 700;
   }
-  .pill-orange { background: var(--orange-light); color: var(--orange); }
-  .pill-teal   { background: var(--teal-light);   color: var(--teal); }
-  .pill-green  { background: #e6f9ef; color: #1a9a5a; }
-  .pill-red    { background: #fde8e8; color: #d63031; }
+  .pill-orange { background: rgba(245,131,32,0.12); color: var(--orange); border: 1px solid rgba(245,131,32,0.2); }
+  .pill-teal   { background: rgba(16,155,159,0.12); color: var(--teal);   border: 1px solid rgba(16,155,159,0.2); }
+  .pill-green  { background: rgba(34,197,94,0.12);  color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+  .pill-red    { background: rgba(239,68,68,0.12);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.2); }
 
   .no-data {
     text-align: center;
-    padding: 40px;
-    color: var(--gray-dark);
+    padding: 48px;
+    color: var(--text-muted);
     font-size: 14px;
   }
-  .no-data .icon { font-size: 40px; margin-bottom: 10px; }
+  .no-data .icon { font-size: 38px; margin-bottom: 12px; opacity: 0.4; }
 
-  /* ── FORM SECTION ── */
-  .form-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  /* ── FORM ── */
   .form-card {
-    background: var(--white);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    max-width: 760px;
+    max-width: 780px;
     margin: 0 auto;
   }
   .form-card-header {
-    background: linear-gradient(135deg, var(--orange), #e06e10);
+    background: linear-gradient(135deg, rgba(245,131,32,0.15), rgba(245,131,32,0.05));
+    border-bottom: 1px solid rgba(245,131,32,0.2);
     padding: 24px 32px;
-    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .form-card-header::before {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(245,131,32,0.2), transparent 70%);
   }
   .form-card-header h2 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--white);
     letter-spacing: 1px;
   }
-  .form-card-header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+  .form-card-header p { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+  .form-card-header-teal {
+    background: linear-gradient(135deg, rgba(16,155,159,0.15), rgba(16,155,159,0.05));
+    border-bottom: 1px solid rgba(16,155,159,0.2);
+  }
+  .form-card-header-teal::before {
+    background: radial-gradient(circle, rgba(16,155,159,0.2), transparent 70%);
+  }
 
   .form-body { padding: 32px; }
   .form-row {
@@ -335,360 +437,354 @@
   .form-row.single { grid-template-columns: 1fr; }
   .form-group { display: flex; flex-direction: column; }
   .form-group label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--gray-dark);
-    margin-bottom: 7px;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
   }
   .form-group label .req { color: var(--orange); margin-left: 2px; }
+
   .form-control {
     padding: 11px 14px;
-    border: 2px solid var(--gray-mid);
-    border-radius: 10px;
-    font-family: 'Nunito', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text);
-    background: var(--white);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--surface-3);
+    transition: all 0.2s;
     outline: none;
+    -webkit-appearance: none;
   }
+  .form-control::placeholder { color: var(--text-dim); }
   .form-control:focus {
     border-color: var(--orange);
-    box-shadow: 0 0 0 3px rgba(245,131,32,0.12);
+    box-shadow: 0 0 0 3px var(--orange-glow);
+    background: var(--surface-4);
   }
-  select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237a8a96' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
   textarea.form-control { resize: vertical; min-height: 80px; }
 
   .other-input-wrap { margin-top: 8px; display: none; }
   .other-input-wrap.show { display: block; }
 
-  /* Signature Pad */
+  /* ── SIGNATURE PAD ── */
   .sig-container {
-    border: 2px solid var(--gray-mid);
-    border-radius: 10px;
-    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-3);
     overflow: hidden;
     position: relative;
+    transition: border-color 0.2s;
   }
-  .sig-container canvas { display: block; cursor: crosshair; }
+  .sig-container:focus-within { border-color: var(--teal); }
+  .sig-container canvas { display: block; cursor: crosshair; background: transparent; }
   .sig-label {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     font-size: 13px;
-    color: #ccc;
-    font-weight: 600;
+    color: var(--text-dim);
+    font-weight: 500;
     pointer-events: none;
     transition: opacity 0.2s;
+    white-space: nowrap;
   }
   .sig-actions {
     display: flex;
     justify-content: flex-end;
     margin-top: 8px;
-    gap: 8px;
   }
   .btn-clear-sig {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 2px solid var(--gray-mid);
-    background: white;
-    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface-3);
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    color: var(--gray-dark);
+    color: var(--text-muted);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
   }
-  .btn-clear-sig:hover { border-color: var(--orange); color: var(--orange); }
+  .btn-clear-sig:hover { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.08); }
 
+  /* ── NOTE BOX ── */
   .note-box {
-    background: var(--orange-light);
-    border-left: 4px solid var(--orange);
-    border-radius: 8px;
+    background: rgba(245,131,32,0.08);
+    border-left: 3px solid var(--orange);
+    border-radius: var(--radius-sm);
     padding: 12px 16px;
     font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
+    font-weight: 500;
+    color: var(--text-muted);
     margin-bottom: 24px;
   }
-  .note-box span { color: var(--orange); font-weight: 800; }
+  .note-box span { color: var(--orange); font-weight: 700; }
+  .note-box-teal {
+    background: rgba(16,155,159,0.08);
+    border-left-color: var(--teal);
+  }
+  .note-box-teal span { color: var(--teal); }
 
+  /* ── SUBMIT BUTTON ── */
   .btn-submit {
     width: 100%;
     padding: 14px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     border: none;
-    background: linear-gradient(135deg, var(--orange), #e06e10);
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
     color: white;
-    font-family: 'Nunito', sans-serif;
-    font-size: 16px;
-    font-weight: 800;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 16px rgba(245,131,32,0.30);
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 20px var(--orange-glow);
+    position: relative;
+    overflow: hidden;
   }
-  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,131,32,0.40); }
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--orange-glow); }
+  .btn-submit:hover::after { opacity: 1; }
   .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
   .btn-submit-teal {
-    background: linear-gradient(135deg, var(--teal), #0d7a7e);
-    box-shadow: 0 4px 16px rgba(16,155,159,0.30);
+    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+    box-shadow: 0 4px 20px var(--teal-glow);
   }
-  .btn-submit-teal:hover { box-shadow: 0 6px 20px rgba(16,155,159,0.40); }
+  .btn-submit-teal:hover { box-shadow: 0 8px 28px var(--teal-glow); }
 
-  /* ── OUTPUT MODAL / PRINT ── */
+  /* ── MODAL ── */
   .modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.75);
     z-index: 200;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(6px);
   }
   .modal-overlay.show { display: flex; }
   .modal-box {
-    background: white;
-    border-radius: 20px;
-    max-width: 680px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    max-width: 700px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.30);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
     animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    from { opacity: 0; transform: scale(0.92) translateY(20px); }
     to   { opacity: 1; transform: scale(1) translateY(0); }
   }
-  .modal-close {
-    position: absolute;
-    top: 16px; right: 20px;
-    background: rgba(0,0,0,0.1);
-    border: none;
-    border-radius: 50%;
-    width: 32px; height: 32px;
-    font-size: 16px;
-    cursor: pointer;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* ── PRINT DOCUMENT ── */
-  .print-doc {
-    padding: 32px 36px;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text);
-    position: relative;
-  }
-  .print-doc-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 18px;
-    border-bottom: 3px solid var(--orange);
-  }
-  .print-doc-logo {
-    width: 56px; height: 56px;
-    background: linear-gradient(135deg, var(--orange), var(--teal));
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    flex-shrink: 0;
-  }
-  .print-doc-title h2 {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--teal);
-  }
-  .print-doc-title p { font-size: 12px; color: var(--gray-dark); }
-
-  .doc-no {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--orange);
-    background: var(--orange-light);
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-left: auto;
-  }
-
-  .doc-section-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin: 20px 0 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--teal-light);
-  }
-  .doc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-  .doc-field { font-size: 13px; }
-  .doc-field .dl { color: var(--gray-dark); font-size: 11px; font-weight: 700; text-transform: uppercase; }
-  .doc-field .dv { font-weight: 700; font-size: 14px; margin-top: 2px; }
-
-  .doc-sig-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 24px;
-    padding-top: 18px;
-    border-top: 2px dashed var(--gray-mid);
-  }
-  .doc-sig-box { text-align: center; }
-  .doc-sig-box .sig-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--gray-dark); margin-bottom: 8px; }
-  .doc-sig-box img { max-height: 80px; max-width: 180px; margin-bottom: 6px; display: block; margin-left: auto; margin-right: auto; }
-  .doc-sig-box .sig-line { border-top: 2px solid var(--text); padding-top: 6px; font-size: 13px; font-weight: 700; }
 
   .modal-actions {
     padding: 16px 32px 24px;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: flex-end;
+    border-top: 1px solid var(--border);
   }
   .btn-action {
-    padding: 10px 22px;
-    border-radius: 10px;
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
     border: none;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
   }
-  .btn-secondary { background: var(--gray); color: var(--text); }
-  .btn-secondary:hover { background: var(--gray-mid); }
+  .btn-secondary { background: var(--surface-3); color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--border-hover); }
   .btn-primary { background: var(--orange); color: white; }
-  .btn-primary:hover { background: #e06e10; }
+  .btn-primary:hover { background: var(--orange-dark); }
   .btn-teal-act { background: var(--teal); color: white; }
-  .btn-teal-act:hover { background: #0d7a7e; }
+  .btn-teal-act:hover { background: var(--teal-dark); }
+
+  /* ── PRINT DOC (stays light for printing) ── */
+  .print-doc {
+    padding: 32px 36px;
+    font-family: 'DM Sans', sans-serif;
+    color: #1a1a1a;
+    background: white;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .print-doc-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  .print-doc-logo {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #f58320, #109b9f);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .print-doc-title h2 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: #f58320; text-transform: uppercase; letter-spacing: 0.5px; }
+  .print-doc-title p  { font-size: 12px; color: #888; margin-top: 3px; }
+  .doc-no {
+    margin-left: auto;
+    background: #fff4e8;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #f58320;
+    border: 1px solid #fde0c0;
+    white-space: nowrap;
+  }
+  .doc-section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #109b9f;
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e6f7f7;
+  }
+  .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  .doc-field { font-size: 13px; }
+  .doc-field .dl { color: #888; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .doc-field .dv { font-weight: 700; font-size: 14px; margin-top: 2px; color: #1a1a1a; }
+  .doc-sig-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-top: 24px; padding-top: 18px;
+    border-top: 2px dashed #e0e0e0;
+  }
+  .doc-sig-box { text-align: center; }
+  .doc-sig-box .sig-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 8px; letter-spacing: 0.5px; }
+  .doc-sig-box img { max-height: 80px; max-width: 180px; margin-bottom: 6px; display: block; margin-left: auto; margin-right: auto; }
+  .doc-sig-box .sig-line { border-top: 2px solid #1a1a1a; padding-top: 6px; font-size: 13px; font-weight: 700; color: #1a1a1a; }
 
   /* ── TOAST ── */
   .toast-wrap {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    position: fixed; bottom: 28px; right: 28px;
+    z-index: 999; display: flex; flex-direction: column; gap: 10px;
   }
   .toast {
-    background: var(--text);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 12px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
-    font-weight: 700;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    animation: toastIn 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 220px;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; align-items: center; gap: 8px;
+    min-width: 240px;
+    max-width: 340px;
+    backdrop-filter: blur(16px);
   }
-  .toast.success { background: var(--teal); }
-  .toast.error   { background: #d63031; }
+  .toast.success { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.1); color: #86efac; }
+  .toast.error   { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); color: #fca5a5; }
   @keyframes toastIn {
-    from { opacity: 0; transform: translateX(30px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateX(30px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
   }
 
-  /* ── SERAH TERIMA FORM ── */
-  .serah-form-card {
-    background: var(--white);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    max-width: 760px;
-    margin: 0 auto;
-  }
-  .serah-form-header {
-    background: linear-gradient(135deg, var(--teal), #0d7a7e);
-    padding: 24px 32px;
-    color: white;
-  }
-
-  /* ── LIST PAGE ── */
+  /* ── FILTER ROW ── */
   .filter-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    align-items: center;
+    display: flex; gap: 10px; margin-bottom: 20px;
+    flex-wrap: wrap; align-items: center;
   }
   .filter-input {
     padding: 9px 14px;
-    border: 2px solid var(--gray-mid);
-    border-radius: 10px;
-    font-family: 'Nunito', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     outline: none;
     min-width: 200px;
+    background: var(--surface-2);
+    color: var(--text);
+    -webkit-appearance: none;
+    transition: all 0.2s;
   }
-  .filter-input:focus { border-color: var(--teal); }
+  .filter-input::placeholder { color: var(--text-dim); }
+  .filter-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
+  select.filter-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237a8a96' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
   .btn-icon {
     padding: 9px 16px;
-    border-radius: 10px;
-    border: 2px solid var(--gray-mid);
-    background: white;
-    font-family: 'Nunito', sans-serif;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; align-items: center; gap: 6px;
     transition: all 0.2s;
+    color: var(--text-muted);
   }
-  .btn-icon:hover { border-color: var(--teal); color: var(--teal); }
-  .btn-icon.orange-btn { border-color: var(--orange); color: var(--orange); }
-  .btn-icon.orange-btn:hover { background: var(--orange); color: white; }
+  .btn-icon:hover { border-color: var(--border-hover); color: var(--text); }
+  .btn-icon.orange-btn { border-color: rgba(245,131,32,0.3); color: var(--orange); }
+  .btn-icon.orange-btn:hover { background: rgba(245,131,32,0.1); }
 
-  /* ── ACTION BTNS IN TABLE ── */
+  /* ── TABLE ACTION BUTTONS ── */
   .tbl-btn {
-    padding: 4px 12px;
-    border-radius: 7px;
-    border: none;
-    font-family: 'Nunito', sans-serif;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s;
-    margin-right: 4px;
+    margin-right: 3px;
   }
-  .tbl-btn-view { background: var(--teal-light); color: var(--teal); }
-  .tbl-btn-view:hover { background: var(--teal); color: white; }
-  .tbl-btn-serah { background: var(--orange-light); color: var(--orange); }
+  .tbl-btn-view  { background: rgba(16,155,159,0.1); color: var(--teal); border-color: rgba(16,155,159,0.2); }
+  .tbl-btn-view:hover  { background: var(--teal); color: white; }
+  .tbl-btn-serah { background: rgba(245,131,32,0.1); color: var(--orange); border-color: rgba(245,131,32,0.2); }
   .tbl-btn-serah:hover { background: var(--orange); color: white; }
-  .tbl-btn-del { background: #fde8e8; color: #d63031; }
-  .tbl-btn-del:hover { background: #d63031; color: white; }
+  .tbl-btn-del   { background: rgba(239,68,68,0.1); color: var(--danger); border-color: rgba(239,68,68,0.2); }
+  .tbl-btn-del:hover   { background: var(--danger); color: white; }
 
   /* ── LOADING ── */
-  .loading-row td { text-align: center; padding: 30px; }
+  .loading-row td { text-align: center; padding: 36px; }
   .spinner {
-    width: 28px; height: 28px;
-    border: 3px solid var(--gray-mid);
+    width: 26px; height: 26px;
+    border: 2px solid var(--border);
     border-top-color: var(--teal);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -698,15 +794,38 @@
 
   /* ── DEV CREDIT ── */
   .dev-credit {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 12px;
-    color: #bbb;
-    font-weight: 600;
-    letter-spacing: 1px;
+    text-align: center; margin-top: 48px;
+    font-size: 11px; color: var(--text-dim);
+    font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase;
   }
   .dev-credit span { color: var(--orange); }
 
+  /* ── SEARCH RESULT ITEMS ── */
+  .search-result-item {
+    padding: 12px 16px;
+    background: rgba(16,155,159,0.07);
+    border: 1px solid rgba(16,155,159,0.15);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+  .search-result-item:hover { border-color: var(--teal); background: rgba(16,155,159,0.12); }
+  .search-result-item .sno { color: var(--teal); }
+  .search-result-item .smuted { color: var(--text-muted); font-size: 12px; }
+
+  /* ── MONO TEXT ── */
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .tracking-grid { grid-template-columns: repeat(3, 1fr); }
+  }
   @media (max-width: 640px) {
     .form-row { grid-template-columns: 1fr; }
     .doc-grid { grid-template-columns: 1fr; }
@@ -714,19 +833,30 @@
     .stat-grid { grid-template-columns: 1fr 1fr; }
     .header-nav .nav-btn span { display: none; }
     .site-header { padding: 0 14px; }
-    .brand-text h1 { font-size: 14px; }
+    .brand-text h1 { font-size: 13px; }
+    .tracking-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-body { padding: 20px; }
   }
 
   @media print {
     .no-print { display: none !important; }
     body { background: white; }
     .modal-overlay { display: block !important; position: static !important; background: none; }
-    .modal-box { box-shadow: none; max-height: none; overflow: visible; }
+    .modal-box { box-shadow: none; max-height: none; overflow: visible; border: none; }
     .modal-actions { display: none; }
+    .print-doc { border-radius: 0; }
   }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 </style>
 </head>
 <body>
+
+<div class="ambient-bg"></div>
 
 <!-- HEADER -->
 <header class="site-header no-print">
@@ -734,7 +864,7 @@
     <div class="brand-icon">🏥</div>
     <div class="brand-text">
       <h1>SARPRAS RADIOLOGI</h1>
-      <p>Sistem Peminjaman Terintegrasi</p>
+      <p>Sistem Peminjaman Terintegrasi v2</p>
     </div>
   </div>
   <nav class="header-nav">
@@ -755,39 +885,39 @@
 
 <div class="main-wrap">
 
-  <!-- ════════════════════ DASHBOARD ════════════════════ -->
+  <!-- ════════ DASHBOARD ════════ -->
   <div class="page-section active" id="page-dashboard">
-    <div class="dashboard-title">📊 Dashboard <span>Peminjaman Sarpras</span></div>
+    <div class="page-title">📊 Dashboard <span class="accent">Sarpras Radiologi</span></div>
 
-    <div class="stat-grid" id="stat-grid">
-      <div class="stat-card">
+    <div class="stat-grid">
+      <div class="stat-card orange-card">
         <div class="stat-icon orange">📦</div>
-        <div class="stat-info"><h3 id="stat-total">0</h3><p>Total Peminjaman</p></div>
+        <div class="stat-info"><h3 id="stat-total">—</h3><p>Total Peminjaman</p></div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card teal-card">
         <div class="stat-icon teal">🔬</div>
-        <div class="stat-info"><h3 id="stat-active">0</h3><p>Sedang Dipinjam</p></div>
+        <div class="stat-info"><h3 id="stat-active">—</h3><p>Sedang Dipinjam</p></div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card orange-card">
         <div class="stat-icon orange">✅</div>
-        <div class="stat-info"><h3 id="stat-returned">0</h3><p>Sudah Dikembalikan</p></div>
+        <div class="stat-info"><h3 id="stat-returned">—</h3><p>Sudah Dikembalikan</p></div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon black">🏢</div>
-        <div class="stat-info"><h3 id="stat-units">0</h3><p>Unit Peminjam</p></div>
+        <div class="stat-icon neutral">🏢</div>
+        <div class="stat-info"><h3 id="stat-units">—</h3><p>Unit Peminjam</p></div>
       </div>
     </div>
 
     <!-- TRACKING USG -->
     <div class="tracking-card">
-      <h2><div class="tracking-pulse"></div> 🔭 Live Tracking — USG Portabel</h2>
+      <h2><div class="tracking-pulse"></div> Live Tracking — USG Portabel</h2>
       <div class="tracking-grid">
         <div class="tracking-item">
           <div class="label">Status Saat Ini</div>
           <div class="value" id="trk-status">—</div>
         </div>
         <div class="tracking-item">
-          <div class="label">Lokasi / Unit Peminjam</div>
+          <div class="label">Lokasi / Unit</div>
           <div class="value" id="trk-unit">—</div>
         </div>
         <div class="tracking-item">
@@ -796,14 +926,14 @@
         </div>
         <div class="tracking-item">
           <div class="label">NIK Pegawai</div>
-          <div class="value" id="trk-nik">—</div>
+          <div class="value mono" id="trk-nik">—</div>
         </div>
         <div class="tracking-item">
-          <div class="label">Tanggal Peminjaman</div>
+          <div class="label">Tanggal</div>
           <div class="value" id="trk-tgl">—</div>
         </div>
         <div class="tracking-item">
-          <div class="label">Jam Peminjaman</div>
+          <div class="label">Jam</div>
           <div class="value" id="trk-jam">—</div>
         </div>
       </div>
@@ -813,7 +943,7 @@
     <div class="section-card">
       <div class="section-card-header">
         <h3>📋 Aktivitas Terbaru</h3>
-        <span class="badge badge-orange" id="badge-recent">0 data</span>
+        <span class="badge badge-orange" id="badge-recent">— data</span>
       </div>
       <div style="overflow-x:auto;">
         <table class="data-table">
@@ -823,7 +953,7 @@
               <th>Tanggal & Jam</th>
               <th>Barang</th>
               <th>Unit Peminjam</th>
-              <th>Nama</th>
+              <th>Nama / NIK</th>
               <th>Status</th>
               <th>Aksi</th>
             </tr>
@@ -835,12 +965,12 @@
       </div>
     </div>
 
-    <div class="dev-credit">Developed by <span>Ino H</span> · SARPRAS Radiologi Terintegrasi</div>
+    <div class="dev-credit">Developed by <span>Ino H</span> · SARPRAS Radiologi Terintegrasi v2</div>
   </div>
 
-  <!-- ════════════════════ FORM PEMINJAMAN ════════════════════ -->
+  <!-- ════════ FORM PEMINJAMAN ════════ -->
   <div class="page-section" id="page-form-pinjam">
-    <div class="form-title">📋 Form <span style="color:var(--orange)">Peminjaman</span></div>
+    <div class="page-title">📋 Form <span class="accent">Peminjaman</span></div>
     <div class="form-card">
       <div class="form-card-header">
         <h2>📝 INPUT PEMINJAMAN SARPRAS</h2>
@@ -865,7 +995,7 @@
             <label>Jenis Barang yang Dipinjam <span class="req">*</span></label>
             <select class="form-control" id="p-barang" onchange="handleBarangChange()">
               <option value="">-- Pilih Barang --</option>
-              <option value="USG Portabel Mindray DP 30 Probe Convex Lengkap Set">USG Portabel Mindray DP 30 Probe Convex Lengkap Set</option>
+              <option value="USG Portabel Mindray DP 30 Probe Convex Lengkap Set">USG Portabel Mindray DP 30 — Probe Convex Lengkap Set</option>
               <option value="lainnya">Lainnya (Ketik Manual)</option>
             </select>
             <div class="other-input-wrap" id="barang-other-wrap">
@@ -897,42 +1027,41 @@
             <label>Tanda Tangan Peminjam <span class="req">*</span></label>
             <div class="sig-container">
               <canvas id="sig-pinjam" width="680" height="160"></canvas>
-              <div class="sig-label" id="sig-pinjam-label">Tanda tangan di sini</div>
+              <div class="sig-label" id="sig-pinjam-label">✍️ Tanda tangan di sini</div>
             </div>
             <div class="sig-actions">
-              <button class="btn-clear-sig" onclick="clearSig('pinjam')">✕ Hapus</button>
+              <button class="btn-clear-sig" onclick="clearSig('pinjam')">✕ Hapus Tanda Tangan</button>
             </div>
           </div>
         </div>
 
-        <button class="btn-submit" onclick="submitPeminjaman()">
+        <button class="btn-submit" onclick="submitPeminjaman()" id="btn-pinjam-submit">
           🚀 Submit & Simpan Peminjaman
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ════════════════════ SERAH TERIMA ════════════════════ -->
+  <!-- ════════ SERAH TERIMA ════════ -->
   <div class="page-section" id="page-serah-terima">
-    <div class="form-title">🔄 Form <span style="color:var(--teal)">Serah Terima Pasca Pinjam</span></div>
-    <div class="serah-form-card">
-      <div class="serah-form-header">
-        <h2 style="font-family:Rajdhani,sans-serif;font-size:20px;font-weight:700;letter-spacing:1px;">🔄 SERAH TERIMA PASCA PINJAM</h2>
-        <p style="font-size:13px;opacity:0.85;margin-top:4px;">Isi data pengembalian alat setelah selesai digunakan</p>
+    <div class="page-title">🔄 Form <span class="accent-teal">Serah Terima Pasca Pinjam</span></div>
+    <div class="form-card" style="max-width:780px;">
+      <div class="form-card-header form-card-header-teal">
+        <h2 style="color:var(--teal);">🔄 SERAH TERIMA PASCA PINJAM</h2>
+        <p>Isi data pengembalian alat setelah selesai digunakan</p>
       </div>
       <div class="form-body">
-
         <div class="form-row single">
           <div class="form-group">
             <label>Cari Nomor Peminjaman / Nama <span class="req">*</span></label>
-            <input type="text" class="form-control" id="st-cari" placeholder="Ketik nama atau NIK peminjam..." oninput="cariPeminjaman()">
+            <input type="text" class="form-control" id="st-cari" placeholder="Ketik nama, NIK, atau nomor peminjaman..." oninput="cariPeminjaman()">
           </div>
         </div>
         <div id="st-results" style="margin-bottom:16px;"></div>
 
         <div id="st-form-area" style="display:none;">
-          <div class="note-box" style="background:var(--teal-light);border-color:var(--teal);">
-            <span style="color:var(--teal);">✅ Data Peminjaman:</span>
+          <div class="note-box note-box-teal">
+            <span>✅ Data Peminjaman:</span>
             <span id="st-info-text"></span>
           </div>
 
@@ -976,7 +1105,7 @@
               <label>TTD Peminjam (Penyerah) <span class="req">*</span></label>
               <div class="sig-container">
                 <canvas id="sig-serah-pinjam" width="310" height="140"></canvas>
-                <div class="sig-label" id="sig-serah-pinjam-label">Tanda tangan di sini</div>
+                <div class="sig-label" id="sig-serah-pinjam-label">✍️ Tanda tangan di sini</div>
               </div>
               <div class="sig-actions">
                 <button class="btn-clear-sig" onclick="clearSig('serah-pinjam')">✕ Hapus</button>
@@ -986,7 +1115,7 @@
               <label>TTD Penerima (Radiologi) <span class="req">*</span></label>
               <div class="sig-container">
                 <canvas id="sig-serah-terima" width="310" height="140"></canvas>
-                <div class="sig-label" id="sig-serah-terima-label">Tanda tangan di sini</div>
+                <div class="sig-label" id="sig-serah-terima-label">✍️ Tanda tangan di sini</div>
               </div>
               <div class="sig-actions">
                 <button class="btn-clear-sig" onclick="clearSig('serah-terima')">✕ Hapus</button>
@@ -995,20 +1124,20 @@
           </div>
 
           <button class="btn-submit btn-submit-teal" onclick="submitSerahTerima()">
-            ✅ Simpan & Cetak Berita Acara
+            ✅ Simpan &amp; Cetak Berita Acara
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ════════════════════ RIWAYAT ════════════════════ -->
+  <!-- ════════ RIWAYAT ════════ -->
   <div class="page-section" id="page-riwayat">
-    <div class="form-title">📁 Riwayat <span style="color:var(--teal)">Semua Peminjaman</span></div>
+    <div class="page-title">📁 Riwayat <span class="accent-teal">Semua Peminjaman</span></div>
 
     <div class="filter-row">
-      <input type="text" class="filter-input" id="filter-search" placeholder="🔍 Cari nama, unit, NIK..." oninput="filterRiwayat()">
-      <select class="filter-input" id="filter-status" onchange="filterRiwayat()" style="min-width:160px;">
+      <input type="text" class="filter-input" id="filter-search" placeholder="🔍 Cari nama, unit, NIK, nomor..." oninput="filterRiwayat()" style="flex:1;">
+      <select class="filter-input" id="filter-status" onchange="filterRiwayat()" style="min-width:180px;">
         <option value="">Semua Status</option>
         <option value="dipinjam">Sedang Dipinjam</option>
         <option value="dikembalikan">Sudah Dikembalikan</option>
@@ -1019,7 +1148,7 @@
     <div class="section-card">
       <div class="section-card-header">
         <h3>📋 Daftar Peminjaman</h3>
-        <span class="badge badge-teal" id="badge-riwayat">0 data</span>
+        <span class="badge badge-teal" id="badge-riwayat">— data</span>
       </div>
       <div style="overflow-x:auto;">
         <table class="data-table">
@@ -1045,15 +1174,13 @@
 
 </div><!-- /main-wrap -->
 
-<!-- TOAST CONTAINER -->
+<!-- TOAST -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
-<!-- ════ MODAL OUTPUT FORM PEMINJAMAN ════ -->
+<!-- MODAL PEMINJAMAN -->
 <div class="modal-overlay" id="modal-pinjam">
-  <div class="modal-box" id="modal-pinjam-box">
-    <div class="print-doc" id="print-pinjam-content">
-      <!-- filled dynamically -->
-    </div>
+  <div class="modal-box">
+    <div class="print-doc" id="print-pinjam-content"></div>
     <div class="modal-actions no-print">
       <button class="btn-action btn-secondary" onclick="closeModal('modal-pinjam')">✕ Tutup</button>
       <button class="btn-action btn-teal-act" onclick="window.print()">🖨️ Cetak</button>
@@ -1061,12 +1188,10 @@
   </div>
 </div>
 
-<!-- ════ MODAL OUTPUT SERAH TERIMA ════ -->
+<!-- MODAL SERAH TERIMA -->
 <div class="modal-overlay" id="modal-serah">
-  <div class="modal-box" id="modal-serah-box">
-    <div class="print-doc" id="print-serah-content">
-      <!-- filled dynamically -->
-    </div>
+  <div class="modal-box">
+    <div class="print-doc" id="print-serah-content"></div>
     <div class="modal-actions no-print">
       <button class="btn-action btn-secondary" onclick="closeModal('modal-serah')">✕ Tutup</button>
       <button class="btn-action btn-teal-act" onclick="window.print()">🖨️ Cetak</button>
@@ -1077,7 +1202,7 @@
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, set, get, update, remove, onValue, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAssrBXh1oKk0FY8cY-rwsW8f2krMaPyoY",
@@ -1086,23 +1211,21 @@ const firebaseConfig = {
   projectId: "peminjaman-sarpras-rad",
   storageBucket: "peminjaman-sarpras-rad.firebasestorage.app",
   messagingSenderId: "776033431237",
-  appId: "1:776033431237:web:e2f73d5db6858c4c038aac",
-  measurementId: "G-VKTHFGY0RE"
+  appId: "1:776033431237:web:e2f73d5db6858c4c038aac"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // ── Signature Pads ──
-let sigPads = {};
+const sigPads = {};
 function initSig(id) {
   const canvas = document.getElementById('sig-' + id);
   if (!canvas) return;
   const pad = new SignaturePad(canvas, {
-    penColor: '#000000',
-    backgroundColor: '#fafafa',
-    minWidth: 1.5,
-    maxWidth: 3
+    penColor: '#1a1a1a',
+    backgroundColor: 'rgba(0,0,0,0)',
+    minWidth: 1.5, maxWidth: 3
   });
   pad.addEventListener('beginStroke', () => {
     const lbl = document.getElementById('sig-' + id + '-label');
@@ -1122,77 +1245,77 @@ initSig('serah-pinjam');
 initSig('serah-terima');
 
 // ── Utils ──
-function genNo() {
+function genNo(prefix = 'RAD') {
   const now = new Date();
   const yy = now.getFullYear().toString().slice(-2);
   const mm = String(now.getMonth()+1).padStart(2,'0');
   const dd = String(now.getDate()).padStart(2,'0');
   const rnd = Math.floor(Math.random()*900+100);
-  return `RAD-${yy}${mm}${dd}-${rnd}`;
+  return `${prefix}-${yy}${mm}${dd}-${rnd}`;
 }
+
 function showToast(msg, type='success') {
   const w = document.getElementById('toast-wrap');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  t.innerHTML = (type==='success'?'✅':'❌') + ' ' + msg;
+  t.innerHTML = (type==='success' ? '✅' : '❌') + ' ' + msg;
   w.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 3800);
 }
+
 window.closeModal = function(id) {
   document.getElementById(id).classList.remove('show');
 };
+
 window.showPage = function(page) {
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active','active-teal'));
   document.getElementById('page-' + page).classList.add('active');
   const btn = document.getElementById('nav-' + page);
-  if (btn) btn.classList.add(page === 'serah-terima' || page === 'riwayat' ? 'active-teal' : 'active');
+  if (btn) btn.classList.add(page==='serah-terima'||page==='riwayat' ? 'active-teal' : 'active');
   if (page === 'riwayat') refreshRiwayat();
-  if (page === 'serah-terima') { setDefaultDT('st'); }
+  if (page === 'serah-terima') setDefaultDT('st');
 };
 
 function setDefaultDT(prefix) {
   const now = new Date();
   const tgl = now.toISOString().split('T')[0];
   const jam = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  if (document.getElementById(prefix+'-tgl') && !document.getElementById(prefix+'-tgl').value) document.getElementById(prefix+'-tgl').value = tgl;
-  if (document.getElementById(prefix+'-jam') && !document.getElementById(prefix+'-jam').value) document.getElementById(prefix+'-jam').value = jam;
+  const t = document.getElementById(prefix+'-tgl');
+  const j = document.getElementById(prefix+'-jam');
+  if (t && !t.value) t.value = tgl;
+  if (j && !j.value) j.value = jam;
 }
 
-// Set default date/time for pinjam form
-const now = new Date();
-document.getElementById('p-tanggal').value = now.toISOString().split('T')[0];
-document.getElementById('p-jam').value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+// Set default datetime
+const _now = new Date();
+document.getElementById('p-tanggal').value = _now.toISOString().split('T')[0];
+document.getElementById('p-jam').value = String(_now.getHours()).padStart(2,'0') + ':' + String(_now.getMinutes()).padStart(2,'0');
 
-// ── Handle Barang Dropdown ──
 window.handleBarangChange = function() {
   const v = document.getElementById('p-barang').value;
-  const wrap = document.getElementById('barang-other-wrap');
-  wrap.classList.toggle('show', v === 'lainnya');
+  document.getElementById('barang-other-wrap').classList.toggle('show', v === 'lainnya');
 };
 
 // ── SUBMIT PEMINJAMAN ──
 window.submitPeminjaman = async function() {
-  const tgl   = document.getElementById('p-tanggal').value;
-  const jam   = document.getElementById('p-jam').value;
+  const btn = document.getElementById('btn-pinjam-submit');
+  const tgl    = document.getElementById('p-tanggal').value;
+  const jam    = document.getElementById('p-jam').value;
   const barangRaw = document.getElementById('p-barang').value;
-  const barang = barangRaw === 'lainnya' ? (document.getElementById('p-barang-other').value.trim()) : barangRaw;
-  const unit  = document.getElementById('p-unit').value.trim();
-  const nik   = document.getElementById('p-nik').value.trim();
-  const nama  = document.getElementById('p-nama').value.trim();
-  const sig   = sigPads['pinjam'] ? sigPads['pinjam'].toDataURL() : '';
+  const barang = barangRaw === 'lainnya' ? document.getElementById('p-barang-other').value.trim() : barangRaw;
+  const unit   = document.getElementById('p-unit').value.trim();
+  const nik    = document.getElementById('p-nik').value.trim();
+  const nama   = document.getElementById('p-nama').value.trim();
 
   if (!tgl||!jam||!barang||!unit||!nik||!nama) { showToast('Semua field wajib diisi!','error'); return; }
-  if (!sigPads['pinjam'] || sigPads['pinjam'].isEmpty()) { showToast('Tanda tangan wajib diisi!','error'); return; }
+  if (!sigPads['pinjam']||sigPads['pinjam'].isEmpty()) { showToast('Tanda tangan wajib diisi!','error'); return; }
 
-  const noDoc = genNo();
-  const data = {
-    noDoc, tgl, jam, barang, unit, nik, nama,
-    ttdPinjam: sig,
-    status: 'dipinjam',
-    createdAt: Date.now()
-  };
+  const noDoc = genNo('RAD');
+  const sig = sigPads['pinjam'].toDataURL();
+  const data = { noDoc, tgl, jam, barang, unit, nik, nama, ttdPinjam: sig, status: 'dipinjam', createdAt: Date.now(), schemaVersion: 2 };
 
+  btn.disabled = true; btn.textContent = '⏳ Menyimpan...';
   try {
     const newRef = push(ref(db, 'peminjaman'));
     await set(newRef, { ...data, firebaseId: newRef.key });
@@ -1202,6 +1325,8 @@ window.submitPeminjaman = async function() {
     loadDashboard();
   } catch(e) {
     showToast('Gagal menyimpan: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '🚀 Submit & Simpan Peminjaman';
   }
 };
 
@@ -1211,15 +1336,14 @@ function resetFormPinjam() {
   document.getElementById('p-barang-other').value = '';
   document.getElementById('barang-other-wrap').classList.remove('show');
   clearSig('pinjam');
-  const now = new Date();
-  document.getElementById('p-tanggal').value = now.toISOString().split('T')[0];
-  document.getElementById('p-jam').value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const n = new Date();
+  document.getElementById('p-tanggal').value = n.toISOString().split('T')[0];
+  document.getElementById('p-jam').value = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
 }
 
-// ── OUTPUT FORM PEMINJAMAN ──
+// ── OUTPUT PEMINJAMAN ──
 function showOutputPinjam(d) {
-  const el = document.getElementById('print-pinjam-content');
-  el.innerHTML = `
+  document.getElementById('print-pinjam-content').innerHTML = `
     <div class="print-doc-header">
       <div class="print-doc-logo">🏥</div>
       <div class="print-doc-title">
@@ -1251,7 +1375,7 @@ function showOutputPinjam(d) {
       </div>
     </div>
     <div style="margin-top:20px;padding:10px 14px;background:#fff4e8;border-radius:8px;font-size:11px;color:#888;font-weight:600;">
-      Dokumen ini dicetak otomatis oleh Sistem SARPRAS Radiologi Terintegrasi — Developed by Ino H
+      Dokumen ini dicetak otomatis oleh Sistem SARPRAS Radiologi Terintegrasi v2 — Developed by Ino H
     </div>`;
   document.getElementById('modal-pinjam').classList.add('show');
 }
@@ -1263,65 +1387,61 @@ window.cariPeminjaman = function() {
   const res = document.getElementById('st-results');
   const form = document.getElementById('st-form-area');
   if (!q) { res.innerHTML = ''; form.style.display='none'; return; }
-  const matches = allPeminjaman.filter(d => d.status === 'dipinjam' && (
+  const matches = allPeminjaman.filter(d => d.status==='dipinjam' && (
     d.nama.toLowerCase().includes(q) || d.nik.includes(q) || d.unit.toLowerCase().includes(q) || d.noDoc.toLowerCase().includes(q)
   ));
   if (!matches.length) {
-    res.innerHTML = `<div style="padding:12px;background:#fde8e8;border-radius:8px;font-size:13px;font-weight:600;color:#d63031;">Tidak ditemukan peminjaman aktif yang cocok.</div>`;
-    form.style.display = 'none'; return;
+    res.innerHTML = `<div style="padding:12px 16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:13px;font-weight:600;color:#fca5a5;">Tidak ditemukan peminjaman aktif yang cocok.</div>`;
+    form.style.display='none'; return;
   }
   res.innerHTML = matches.map(d => `
-    <div onclick="pilihPeminjaman('${d.firebaseId}')" style="padding:12px 16px;background:var(--teal-light);border:2px solid transparent;border-radius:10px;cursor:pointer;margin-bottom:8px;font-size:13px;font-weight:700;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='transparent'">
-      <span style="color:var(--teal);">${d.noDoc}</span> — ${d.nama} (${d.unit}) — <span style="color:var(--gray-dark);">${d.tgl} ${d.jam}</span>
+    <div class="search-result-item" onclick="pilihPeminjaman('${d.firebaseId}')">
+      <span class="sno">${d.noDoc}</span> — <strong>${d.nama}</strong> <span class="smuted">(${d.unit}) · ${d.tgl} ${d.jam}</span>
     </div>`).join('');
 };
 
 let selectedPinjaman = null;
 window.pilihPeminjaman = function(id) {
-  selectedPinjaman = allPeminjaman.find(d => d.firebaseId === id);
+  selectedPinjaman = allPeminjaman.find(d => d.firebaseId===id);
   if (!selectedPinjaman) return;
   document.getElementById('st-info-text').textContent = ` ${selectedPinjaman.noDoc} — ${selectedPinjaman.barang} — ${selectedPinjaman.nama} (${selectedPinjaman.unit})`;
-  document.getElementById('st-form-area').style.display = 'block';
-  document.getElementById('st-results').innerHTML = '';
-  document.getElementById('st-cari').value = `${selectedPinjaman.noDoc} — ${selectedPinjaman.nama}`;
+  document.getElementById('st-form-area').style.display='block';
+  document.getElementById('st-results').innerHTML='';
+  document.getElementById('st-cari').value=`${selectedPinjaman.noDoc} — ${selectedPinjaman.nama}`;
   setDefaultDT('st');
 };
 
 // ── SUBMIT SERAH TERIMA ──
 window.submitSerahTerima = async function() {
   if (!selectedPinjaman) { showToast('Pilih data peminjaman terlebih dahulu!','error'); return; }
-  const tgl      = document.getElementById('st-tgl').value;
-  const jam      = document.getElementById('st-jam').value;
-  const kondisi  = document.getElementById('st-kondisi').value;
-  const penerima = document.getElementById('st-penerima').value.trim();
-  const catatan  = document.getElementById('st-catatan').value.trim();
-  const sigPenyerah = sigPads['serah-pinjam'] ? sigPads['serah-pinjam'].toDataURL() : '';
-  const sigPenerim  = sigPads['serah-terima']  ? sigPads['serah-terima'].toDataURL()  : '';
+  const tgl     = document.getElementById('st-tgl').value;
+  const jam     = document.getElementById('st-jam').value;
+  const kondisi = document.getElementById('st-kondisi').value;
+  const penerima= document.getElementById('st-penerima').value.trim();
+  const catatan = document.getElementById('st-catatan').value.trim();
+  const sigP    = sigPads['serah-pinjam'] ? sigPads['serah-pinjam'].toDataURL() : '';
+  const sigT    = sigPads['serah-terima'] ? sigPads['serah-terima'].toDataURL() : '';
 
   if (!tgl||!jam||!kondisi) { showToast('Tanggal, Jam, dan Kondisi wajib diisi!','error'); return; }
-  if (sigPads['serah-pinjam'].isEmpty() || sigPads['serah-terima'].isEmpty()) { showToast('Kedua tanda tangan wajib diisi!','error'); return; }
+  if (sigPads['serah-pinjam'].isEmpty()||sigPads['serah-terima'].isEmpty()) { showToast('Kedua tanda tangan wajib diisi!','error'); return; }
 
-  const noSerah = genNo().replace('RAD-','ST-');
+  const noSerah = genNo('ST');
   const stData = {
-    noSerah,
+    noSerah, schemaVersion: 2,
     refPinjaman: selectedPinjaman.firebaseId,
     noDocPinjaman: selectedPinjaman.noDoc,
-    tglPinjam: selectedPinjaman.tgl,
-    jamPinjam: selectedPinjaman.jam,
-    barang: selectedPinjaman.barang,
-    unit: selectedPinjaman.unit,
-    nama: selectedPinjaman.nama,
-    nik: selectedPinjaman.nik,
+    tglPinjam: selectedPinjaman.tgl, jamPinjam: selectedPinjaman.jam,
+    barang: selectedPinjaman.barang, unit: selectedPinjaman.unit,
+    nama: selectedPinjaman.nama, nik: selectedPinjaman.nik,
     tglKembali: tgl, jamKembali: jam, kondisi, penerima, catatan,
-    ttdPenyerah: sigPenyerah,
-    ttdPenerima: sigPenerim,
+    ttdPenyerah: sigP, ttdPenerima: sigT,
     createdAt: Date.now()
   };
 
   try {
     const newRef = push(ref(db, 'serahterima'));
     await set(newRef, { ...stData, firebaseId: newRef.key });
-    await update(ref(db, `peminjaman/${selectedPinjaman.firebaseId}`), { status: 'dikembalikan', tglKembali: tgl, jamKembali: jam, kondisi });
+    await update(ref(db, `peminjaman/${selectedPinjaman.firebaseId}`), { status: 'dikembalikan', tglKembali: tgl, jamKembali: jam, kondisi, updatedAt: Date.now() });
     showToast('Serah terima berhasil disimpan! ✅');
     showOutputSerah(stData);
     resetFormST();
@@ -1332,25 +1452,24 @@ window.submitSerahTerima = async function() {
 };
 
 function resetFormST() {
-  ['st-tgl','st-jam','st-kondisi','st-penerima','st-catatan'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+  ['st-tgl','st-jam','st-kondisi','st-penerima','st-catatan'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   clearSig('serah-pinjam'); clearSig('serah-terima');
-  document.getElementById('st-cari').value = '';
-  document.getElementById('st-form-area').style.display = 'none';
-  document.getElementById('st-results').innerHTML = '';
-  selectedPinjaman = null;
+  document.getElementById('st-cari').value='';
+  document.getElementById('st-form-area').style.display='none';
+  document.getElementById('st-results').innerHTML='';
+  selectedPinjaman=null;
 }
 
 // ── OUTPUT SERAH TERIMA ──
 function showOutputSerah(d) {
-  const el = document.getElementById('print-serah-content');
-  el.innerHTML = `
+  document.getElementById('print-serah-content').innerHTML = `
     <div class="print-doc-header">
-      <div class="print-doc-logo" style="background:linear-gradient(135deg,var(--teal),#0d7a7e);">🔄</div>
+      <div class="print-doc-logo" style="background:linear-gradient(135deg,#109b9f,#0d7a7e);">🔄</div>
       <div class="print-doc-title">
-        <h2 style="color:var(--teal);">BERITA ACARA SERAH TERIMA BARANG</h2>
-        <p>Pengembalian Sarpras Radiologi — Sistem Terintegrasi</p>
+        <h2 style="color:#109b9f;">BERITA ACARA SERAH TERIMA BARANG</h2>
+        <p>Pengembalian Sarpras Radiologi — Sistem Terintegrasi v2</p>
       </div>
-      <div class="doc-no" style="background:var(--teal-light);color:var(--teal);">${d.noSerah}</div>
+      <div class="doc-no" style="background:#e6f7f7;color:#109b9f;border-color:#b0e5e6;">${d.noSerah}</div>
     </div>
     <div class="doc-section-title">📋 Data Peminjaman Asal</div>
     <div class="doc-grid">
@@ -1366,7 +1485,7 @@ function showOutputSerah(d) {
       <div class="doc-field"><div class="dl">Tanggal Kembali</div><div class="dv">${d.tglKembali}</div></div>
       <div class="doc-field"><div class="dl">Jam Kembali</div><div class="dv">${d.jamKembali}</div></div>
       <div class="doc-field"><div class="dl">Kondisi Barang</div><div class="dv">${d.kondisi}</div></div>
-      <div class="doc-field"><div class="dl">Diterima Oleh</div><div class="dv">${d.penerima || '—'}</div></div>
+      <div class="doc-field"><div class="dl">Diterima Oleh</div><div class="dv">${d.penerima||'—'}</div></div>
     </div>
     ${d.catatan ? `<div class="doc-field" style="margin-top:8px;"><div class="dl">Catatan</div><div class="dv">${d.catatan}</div></div>` : ''}
     <div class="doc-section-title">✍️ Tanda Tangan Para Pihak</div>
@@ -1379,51 +1498,44 @@ function showOutputSerah(d) {
       <div class="doc-sig-box">
         <div class="sig-title">Yang Menerima (Petugas Radiologi)</div>
         <img src="${d.ttdPenerima}" alt="ttd penerima">
-        <div class="sig-line">${d.penerima || '(................................)'}</div>
+        <div class="sig-line">${d.penerima||'(................................)'}</div>
       </div>
     </div>
-    <div style="margin-top:20px;padding:10px 14px;background:var(--teal-light);border-radius:8px;font-size:11px;color:#888;font-weight:600;">
-      Dokumen ini dicetak otomatis oleh Sistem SARPRAS Radiologi Terintegrasi — Developed by Ino H
+    <div style="margin-top:20px;padding:10px 14px;background:#e6f7f7;border-radius:8px;font-size:11px;color:#888;font-weight:600;">
+      Dokumen ini dicetak otomatis oleh Sistem SARPRAS Radiologi Terintegrasi v2 — Developed by Ino H
     </div>`;
   document.getElementById('modal-serah').classList.add('show');
 }
 
-// ── DASHBOARD LOAD ──
+// ── DASHBOARD ──
+let allRiwayat = [];
 async function loadDashboard() {
   const snap = await get(ref(db, 'peminjaman'));
   const tbody = document.getElementById('recent-tbody');
-
   if (!snap.exists()) {
-    allPeminjaman = [];
-    updateStats([]);
+    allPeminjaman = []; updateStats([]); updateTracking([]);
     tbody.innerHTML = `<tr><td colspan="7"><div class="no-data"><div class="icon">📭</div>Belum ada data peminjaman.</div></td></tr>`;
     return;
   }
-
   const rows = [];
-  snap.forEach(child => rows.push({ ...child.val(), firebaseId: child.key }));
+  snap.forEach(c => rows.push({ ...c.val(), firebaseId: c.key }));
   allPeminjaman = rows.sort((a,b) => b.createdAt - a.createdAt);
-
   updateStats(allPeminjaman);
   updateTracking(allPeminjaman);
-
-  const recent = allPeminjaman.slice(0, 10);
   document.getElementById('badge-recent').textContent = `${allPeminjaman.length} data`;
-
-  tbody.innerHTML = recent.map((d, i) => `
+  const recent = allPeminjaman.slice(0,10);
+  tbody.innerHTML = recent.map((d,i) => `
     <tr>
-      <td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--gray-dark);">${i+1}</td>
+      <td class="mono" style="font-size:11px;color:var(--text-dim);">${i+1}</td>
       <td>
         <div style="font-weight:700;font-size:13px;">${d.tgl}</div>
-        <div style="font-size:11px;color:var(--gray-dark);">${d.jam}</div>
+        <div class="mono" style="font-size:11px;color:var(--text-muted);">${d.jam}</div>
       </td>
-      <td>
-        <div style="font-weight:700;font-size:12px;">${d.barang.length > 30 ? d.barang.slice(0,30)+'…' : d.barang}</div>
-      </td>
+      <td style="font-weight:600;font-size:13px;">${d.barang.length>32?d.barang.slice(0,32)+'…':d.barang}</td>
       <td><span class="pill pill-teal">${d.unit}</span></td>
       <td>
         <div style="font-weight:700;">${d.nama}</div>
-        <div style="font-size:11px;font-family:JetBrains Mono,monospace;color:var(--gray-dark);">${d.nik}</div>
+        <div class="mono" style="font-size:11px;color:var(--text-muted);">${d.nik}</div>
       </td>
       <td><span class="pill ${d.status==='dipinjam'?'pill-orange':'pill-green'}">${d.status==='dipinjam'?'Dipinjam':'Dikembalikan'}</span></td>
       <td>
@@ -1434,39 +1546,32 @@ async function loadDashboard() {
 }
 
 function updateStats(rows) {
-  const total = rows.length;
-  const active = rows.filter(r => r.status === 'dipinjam').length;
-  const returned = rows.filter(r => r.status === 'dikembalikan').length;
-  const units = new Set(rows.map(r => r.unit)).size;
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-active').textContent = active;
-  document.getElementById('stat-returned').textContent = returned;
-  document.getElementById('stat-units').textContent = units;
+  document.getElementById('stat-total').textContent    = rows.length;
+  document.getElementById('stat-active').textContent   = rows.filter(r=>r.status==='dipinjam').length;
+  document.getElementById('stat-returned').textContent = rows.filter(r=>r.status==='dikembalikan').length;
+  document.getElementById('stat-units').textContent    = new Set(rows.map(r=>r.unit)).size;
 }
 
 function updateTracking(rows) {
   const usgRows = rows.filter(r => r.barang.toLowerCase().includes('usg'));
-  const activeUSG = usgRows.find(r => r.status === 'dipinjam');
-  const lastUSG = usgRows[0]; // already sorted by createdAt desc
-
-  if (activeUSG) {
+  const active  = usgRows.find(r => r.status==='dipinjam');
+  const last    = usgRows[0];
+  if (active) {
     document.getElementById('trk-status').innerHTML = '<span class="status-borrowed">⚠️ SEDANG DIPINJAM</span>';
-    document.getElementById('trk-unit').textContent = activeUSG.unit;
-    document.getElementById('trk-nama').textContent = activeUSG.nama;
-    document.getElementById('trk-nik').textContent = activeUSG.nik;
-    document.getElementById('trk-tgl').textContent = activeUSG.tgl;
-    document.getElementById('trk-jam').textContent = activeUSG.jam;
-  } else if (lastUSG) {
+    document.getElementById('trk-unit').textContent = active.unit;
+    document.getElementById('trk-nama').textContent = active.nama;
+    document.getElementById('trk-nik').textContent  = active.nik;
+    document.getElementById('trk-tgl').textContent  = active.tgl;
+    document.getElementById('trk-jam').textContent  = active.jam;
+  } else if (last) {
     document.getElementById('trk-status').innerHTML = '<span class="status-available">✅ TERSEDIA DI RADIOLOGI</span>';
     document.getElementById('trk-unit').textContent = 'Radiologi';
-    document.getElementById('trk-nama').textContent = 'Terakhir: ' + lastUSG.nama;
-    document.getElementById('trk-nik').textContent = lastUSG.nik;
-    document.getElementById('trk-tgl').textContent = lastUSG.tglKembali || lastUSG.tgl;
-    document.getElementById('trk-jam').textContent = lastUSG.jamKembali || lastUSG.jam;
+    document.getElementById('trk-nama').textContent = 'Terakhir: '+last.nama;
+    document.getElementById('trk-nik').textContent  = last.nik;
+    document.getElementById('trk-tgl').textContent  = last.tglKembali||last.tgl;
+    document.getElementById('trk-jam').textContent  = last.jamKembali||last.jam;
   } else {
-    ['trk-status','trk-unit','trk-nama','trk-nik','trk-tgl','trk-jam'].forEach(id => {
-      document.getElementById(id).textContent = '—';
-    });
+    ['trk-unit','trk-nama','trk-nik','trk-tgl','trk-jam'].forEach(id=>document.getElementById(id).textContent='—');
     document.getElementById('trk-status').innerHTML = '<span class="status-available">✅ TERSEDIA</span>';
   }
 }
@@ -1474,50 +1579,42 @@ function updateTracking(rows) {
 // ── RIWAYAT ──
 window.refreshRiwayat = loadRiwayat;
 window.filterRiwayat = filterRiwayat;
-let allRiwayat = [];
-
 async function loadRiwayat() {
   const tbody = document.getElementById('riwayat-tbody');
   tbody.innerHTML = `<tr class="loading-row"><td colspan="8"><div class="spinner"></div></td></tr>`;
-  const snap = await get(ref(db, 'peminjaman'));
+  const snap = await get(ref(db,'peminjaman'));
   if (!snap.exists()) {
-    allRiwayat = [];
-    tbody.innerHTML = `<tr><td colspan="8"><div class="no-data"><div class="icon">📭</div>Belum ada data.</div></td></tr>`;
+    allRiwayat=[];
+    tbody.innerHTML=`<tr><td colspan="8"><div class="no-data"><div class="icon">📭</div>Belum ada data.</div></td></tr>`;
     return;
   }
-  allRiwayat = [];
-  snap.forEach(c => allRiwayat.push({ ...c.val(), firebaseId: c.key }));
-  allRiwayat.sort((a,b) => b.createdAt - a.createdAt);
-  allPeminjaman = allRiwayat;
+  allRiwayat=[];
+  snap.forEach(c => allRiwayat.push({...c.val(),firebaseId:c.key}));
+  allRiwayat.sort((a,b)=>b.createdAt-a.createdAt);
+  allPeminjaman=allRiwayat;
   renderRiwayat(allRiwayat);
 }
-
 function filterRiwayat() {
-  const q = document.getElementById('filter-search').value.toLowerCase();
-  const s = document.getElementById('filter-status').value;
-  let filtered = allRiwayat.filter(d => {
-    const matchQ = !q || d.nama.toLowerCase().includes(q) || d.unit.toLowerCase().includes(q) || d.nik.includes(q) || d.noDoc.toLowerCase().includes(q);
-    const matchS = !s || d.status === s;
-    return matchQ && matchS;
-  });
-  renderRiwayat(filtered);
+  const q=document.getElementById('filter-search').value.toLowerCase();
+  const s=document.getElementById('filter-status').value;
+  renderRiwayat(allRiwayat.filter(d=>{
+    const mq=!q||d.nama.toLowerCase().includes(q)||d.unit.toLowerCase().includes(q)||d.nik.includes(q)||d.noDoc.toLowerCase().includes(q);
+    const ms=!s||d.status===s;
+    return mq&&ms;
+  }));
 }
-
 function renderRiwayat(rows) {
-  const tbody = document.getElementById('riwayat-tbody');
-  document.getElementById('badge-riwayat').textContent = `${rows.length} data`;
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="no-data"><div class="icon">🔍</div>Tidak ada data yang cocok.</div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML = rows.map((d, i) => `
+  const tbody=document.getElementById('riwayat-tbody');
+  document.getElementById('badge-riwayat').textContent=`${rows.length} data`;
+  if (!rows.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="no-data"><div class="icon">🔍</div>Tidak ada data yang cocok.</div></td></tr>`; return; }
+  tbody.innerHTML=rows.map((d,i)=>`
     <tr>
-      <td style="font-size:12px;color:var(--gray-dark);">${i+1}</td>
-      <td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--orange);">${d.noDoc}</td>
-      <td><div style="font-weight:700;font-size:12px;">${d.tgl}</div><div style="font-size:11px;color:var(--gray-dark);">${d.jam}</div></td>
+      <td style="font-size:11px;color:var(--text-dim);">${i+1}</td>
+      <td class="mono" style="font-size:11px;color:var(--orange);">${d.noDoc}</td>
+      <td><div style="font-weight:700;font-size:12px;">${d.tgl}</div><div class="mono" style="font-size:11px;color:var(--text-muted);">${d.jam}</div></td>
       <td style="font-size:12px;font-weight:600;">${d.barang.length>30?d.barang.slice(0,30)+'…':d.barang}</td>
       <td><span class="pill pill-teal">${d.unit}</span></td>
-      <td><div style="font-weight:700;font-size:13px;">${d.nama}</div><div style="font-size:11px;font-family:JetBrains Mono,monospace;color:var(--gray-dark);">${d.nik}</div></td>
+      <td><div style="font-weight:700;font-size:13px;">${d.nama}</div><div class="mono" style="font-size:11px;color:var(--text-muted);">${d.nik}</div></td>
       <td><span class="pill ${d.status==='dipinjam'?'pill-orange':'pill-green'}">${d.status==='dipinjam'?'Dipinjam':'Dikembalikan'}</span></td>
       <td>
         <button class="tbl-btn tbl-btn-view" onclick="viewOutputPinjam('${d.firebaseId}')">👁</button>
@@ -1528,41 +1625,35 @@ function renderRiwayat(rows) {
 }
 
 window.viewOutputPinjam = function(id) {
-  const d = allPeminjaman.find(x => x.firebaseId === id) || allRiwayat.find(x => x.firebaseId === id);
-  if (d) showOutputPinjam(d);
+  const d=allPeminjaman.find(x=>x.firebaseId===id)||allRiwayat.find(x=>x.firebaseId===id);
+  if(d) showOutputPinjam(d);
 };
-
 window.quickSerah = function(id) {
-  const d = allPeminjaman.find(x => x.firebaseId === id) || allRiwayat.find(x => x.firebaseId === id);
-  if (!d) return;
+  const d=allPeminjaman.find(x=>x.firebaseId===id)||allRiwayat.find(x=>x.firebaseId===id);
+  if(!d) return;
   showPage('serah-terima');
-  document.getElementById('st-cari').value = `${d.noDoc} — ${d.nama}`;
-  selectedPinjaman = d;
-  document.getElementById('st-info-text').textContent = ` ${d.noDoc} — ${d.barang} — ${d.nama} (${d.unit})`;
-  document.getElementById('st-form-area').style.display = 'block';
+  document.getElementById('st-cari').value=`${d.noDoc} — ${d.nama}`;
+  selectedPinjaman=d;
+  document.getElementById('st-info-text').textContent=` ${d.noDoc} — ${d.barang} — ${d.nama} (${d.unit})`;
+  document.getElementById('st-form-area').style.display='block';
   setDefaultDT('st');
 };
-
 window.delPinjam = async function(id) {
-  if (!confirm('Hapus data peminjaman ini?')) return;
+  if(!confirm('Hapus data peminjaman ini? Tindakan ini tidak dapat dibatalkan.')) return;
   try {
-    await remove(ref(db, `peminjaman/${id}`));
-    showToast('Data dihapus.');
+    await remove(ref(db,`peminjaman/${id}`));
+    showToast('Data berhasil dihapus.');
     loadRiwayat(); loadDashboard();
-  } catch(e) {
-    showToast('Gagal hapus: '+e.message,'error');
-  }
+  } catch(e) { showToast('Gagal hapus: '+e.message,'error'); }
 };
 
 // ── INIT ──
 loadDashboard();
-
-// Real-time listener
-onValue(ref(db, 'peminjaman'), snap => {
-  const rows = [];
-  if (snap.exists()) snap.forEach(c => rows.push({ ...c.val(), firebaseId: c.key }));
-  allPeminjaman = rows.sort((a,b) => b.createdAt - a.createdAt);
-  allRiwayat = allPeminjaman;
+onValue(ref(db,'peminjaman'), snap => {
+  const rows=[];
+  if(snap.exists()) snap.forEach(c=>rows.push({...c.val(),firebaseId:c.key}));
+  allPeminjaman=rows.sort((a,b)=>b.createdAt-a.createdAt);
+  allRiwayat=allPeminjaman;
   updateStats(allPeminjaman);
   updateTracking(allPeminjaman);
 });
