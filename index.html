@@ -262,6 +262,12 @@ textarea { resize: vertical; min-height: 72px; }
 .btn-ghost:hover { border-color: var(--c-teal1); color: var(--c-teal1); }
 .btn-danger { background: #fee2e2; color: #dc2626; border: 1.5px solid #fca5a5; }
 .btn-danger:hover { background: #dc2626; color: #fff; }
+.btn-lanjut {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(124,58,237,.30);
+}
+.btn-lanjut:hover { transform: translateY(-1px); }
 .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
 
 /* ── TOAST ── */
@@ -277,6 +283,7 @@ textarea { resize: vertical; min-height: 72px; }
 }
 .toast.success { background: var(--c-teal1); }
 .toast.error { background: #dc2626; }
+.toast.warning { background: #d97706; }
 @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
 
@@ -339,6 +346,7 @@ tbody tr:last-child td { border-bottom: none; }
 .badge.returned { background: #dbeafe; color: #2563eb; }
 .badge.overdue { background: #fee2e2; color: #dc2626; }
 .badge.warning { background: #fef9c3; color: #ca8a04; }
+.badge.lanjut { background: #ede9fe; color: #7c3aed; }
 
 /* ── DURATION BAR ── */
 .dur-bar-wrap { display: flex; align-items: center; gap: 8px; }
@@ -367,7 +375,7 @@ tbody tr:last-child td { border-bottom: none; }
   background: var(--surface);
   border-radius: 18px;
   padding: 28px;
-  max-width: 540px; width: 95%;
+  max-width: 560px; width: 95%;
   box-shadow: var(--shadow-lg);
   animation: fadeUp .25s ease;
   max-height: 90vh; overflow-y: auto;
@@ -378,6 +386,62 @@ tbody tr:last-child td { border-bottom: none; }
   font-size: 18px; font-weight: 700; margin-bottom: 18px;
   color: var(--text); display: flex; align-items: center; gap: 10px;
 }
+
+/* ── POPUP BLOKIR ── */
+.popup-blokir-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.55); z-index: 300;
+  align-items: center; justify-content: center;
+}
+.popup-blokir-overlay.open { display: flex; }
+.popup-blokir-box {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 32px;
+  max-width: 480px; width: 95%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  animation: fadeUp .3s ease;
+  text-align: center;
+}
+.popup-blokir-icon { font-size: 56px; margin-bottom: 16px; display: block; }
+.popup-blokir-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px; font-weight: 700; color: #dc2626;
+  margin-bottom: 12px;
+}
+.popup-blokir-body { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 8px; }
+.popup-blokir-items {
+  background: #fff8ec; border: 1.5px solid #f5a45a;
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 13px; color: #92400e;
+  margin: 14px 0 20px; text-align: left;
+}
+.popup-blokir-items li { margin-left: 18px; margin-bottom: 4px; }
+.popup-blokir-hint {
+  background: #ede9fe; border: 1.5px solid #c4b5fd;
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 12px; color: #6d28d9;
+  margin-bottom: 20px; text-align: left;
+}
+
+/* ── MODAL LANJUT ── */
+.lanjut-chain {
+  background: var(--bg); border-radius: 10px;
+  padding: 12px 16px; margin-bottom: 16px;
+}
+.lanjut-chain-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; font-size: 13px;
+}
+.lanjut-chain-item:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px; margin-bottom: 2px;
+}
+.chain-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.chain-dot.done { background: #38a169; }
+.chain-dot.current { background: var(--c-orange); }
 
 /* ── ALERT BOX ── */
 .alert-box {
@@ -400,6 +464,15 @@ tbody tr:last-child td { border-bottom: none; }
 .loader { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── RANTAI PEMINJAMAN ── */
+.chain-info-box {
+  background: #ede9fe; border: 1.5px solid #c4b5fd;
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 13px; color: #6d28d9;
+  margin-top: 8px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .page { padding: 16px; }
@@ -416,20 +489,85 @@ tbody tr:last-child td { border-bottom: none; }
 
 <div id="toast-container"></div>
 
-<!-- NAV -->
+<!-- NAV — urutan: Dashboard → Input Peminjaman → Pengembalian -->
 <nav>
   <div class="nav-brand"><span>🏥</span> SARPRAS RAD</div>
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="showPage('form')" id="tab-form"><span class="tab-icon">📋</span> Form Peminjaman</div>
+    <div class="nav-tab active" onclick="showPage('dashboard')" id="tab-dashboard"><span class="tab-icon">📊</span> Dashboard</div>
+    <div class="nav-tab" onclick="showPage('form')" id="tab-form"><span class="tab-icon">📋</span> Input Peminjaman</div>
     <div class="nav-tab" onclick="showPage('pengembalian')" id="tab-pengembalian"><span class="tab-icon">🔁</span> Pengembalian</div>
-    <div class="nav-tab" onclick="showPage('dashboard')" id="tab-dashboard"><span class="tab-icon">📊</span> Dashboard</div>
   </div>
 </nav>
 
 <!-- ════════════════════════════════════════════
-     PAGE 1 — FORM PEMINJAMAN
+     PAGE 1 — DASHBOARD (HALAMAN PERTAMA)
 ════════════════════════════════════════════ -->
-<div class="page active" id="page-form">
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <h1>📊 Dashboard Peminjaman</h1>
+    <p>Ringkasan dan analitik peminjaman sarpras radiologi secara real-time</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card orange">
+      <div class="stat-icon">🔴</div>
+      <div class="stat-num" id="s-aktif">—</div>
+      <div class="stat-label">Sedang Dipinjam</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="stat-icon">✅</div>
+      <div class="stat-num" id="s-kembali">—</div>
+      <div class="stat-label">Sudah Dikembalikan</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">📋</div>
+      <div class="stat-num" id="s-total">—</div>
+      <div class="stat-label">Total Peminjaman</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-num" id="s-overdue">—</div>
+      <div class="stat-label">Melewati 1 Hari</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
+    <!-- Tabel Peminjaman -->
+    <div class="card">
+      <div class="card-title">📋 Semua Peminjaman</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Barang</th>
+              <th>Peminjam</th>
+              <th>Ruangan</th>
+              <th>Lama</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="ei">📭</div><p>Memuat…</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Chart Ruangan -->
+    <div class="card">
+      <div class="card-title">🏆 Unit yang Sering Meminjam</div>
+      <div id="chart-ruangan" class="chart-bar-list">
+        <div class="empty-state"><div class="ei">📊</div><p>Belum ada data</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE 2 — FORM PEMINJAMAN
+════════════════════════════════════════════ -->
+<div class="page" id="page-form">
   <div class="page-header">
     <h1>📋 Form Peminjaman Sarpras Radiologi</h1>
     <p>Isi seluruh data yang bertanda <span style="color:var(--c-orange)">*</span> dengan lengkap dan benar</p>
@@ -512,7 +650,7 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 
   <div class="alert-box">
-    ⚠️ <span>Barang yang dipinjam <b>hanya boleh berpindah tangan maksimal 1 kali</b> dan maksimal dalam <b>1 hari</b>. Pindah tangan harus dilaporkan melalui sistem ini.</span>
+    ⚠️ <span>Barang yang masih berstatus <b>Dipinjam</b> tidak dapat dipinjam kembali. Gunakan fitur <b>Pinjam Lanjutan</b> di halaman Pengembalian jika ingin serah terima ke ruangan berikutnya.</span>
   </div>
 
   <div class="form-actions">
@@ -524,12 +662,12 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <!-- ════════════════════════════════════════════
-     PAGE 2 — PENGEMBALIAN
+     PAGE 3 — PENGEMBALIAN
 ════════════════════════════════════════════ -->
 <div class="page" id="page-pengembalian">
   <div class="page-header">
     <h1>🔁 Pengembalian Barang</h1>
-    <p>Pilih peminjaman aktif yang akan dikembalikan</p>
+    <p>Kembalikan barang atau lanjutkan peminjaman ke ruangan berikutnya</p>
   </div>
 
   <div class="card">
@@ -538,76 +676,13 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     PAGE 3 — DASHBOARD
-════════════════════════════════════════════ -->
-<div class="page" id="page-dashboard">
-  <div class="page-header">
-    <h1>📊 Dashboard Peminjaman</h1>
-    <p>Ringkasan dan analitik peminjaman sarpras radiologi secara real-time</p>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card orange">
-      <div class="stat-icon">🔴</div>
-      <div class="stat-num" id="s-aktif">—</div>
-      <div class="stat-label">Sedang Dipinjam</div>
-    </div>
-    <div class="stat-card teal">
-      <div class="stat-icon">✅</div>
-      <div class="stat-num" id="s-kembali">—</div>
-      <div class="stat-label">Sudah Dikembalikan</div>
-    </div>
-    <div class="stat-card blue">
-      <div class="stat-icon">📋</div>
-      <div class="stat-num" id="s-total">—</div>
-      <div class="stat-label">Total Peminjaman</div>
-    </div>
-    <div class="stat-card green" style="--before-bg: red">
-      <div class="stat-icon">⚠️</div>
-      <div class="stat-num" id="s-overdue">—</div>
-      <div class="stat-label">Melewati 1 Hari</div>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
-    <!-- Tabel Peminjaman -->
-    <div class="card">
-      <div class="card-title">📋 Semua Peminjaman</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Barang</th>
-              <th>Peminjam</th>
-              <th>Ruangan</th>
-              <th>Lama</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="tbl-body">
-            <tr><td colspan="5"><div class="empty-state"><div class="ei">📭</div><p>Memuat…</p></div></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Chart Ruangan -->
-    <div class="card">
-      <div class="card-title">🏆 Unit yang Sering Meminjam</div>
-      <div id="chart-ruangan" class="chart-bar-list">
-        <div class="empty-state"><div class="ei">📊</div><p>Belum ada data</p></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ── MODAL PENGEMBALIAN ── -->
 <div class="modal-overlay" id="modal-kembali">
   <div class="modal-box">
     <div class="modal-title">🔁 Konfirmasi Pengembalian</div>
     <p style="font-size:14px;color:var(--text-2);margin-bottom:16px">Silakan lengkapi data pengembalian berikut:</p>
+
+    <div id="modal-barang-info" style="background:var(--bg);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--text-2)"></div>
 
     <div class="form-group" style="margin-bottom:14px">
       <label>Tanggal & Jam Kembali <span class="required">*</span></label>
@@ -641,18 +716,80 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
+<!-- ── MODAL PINJAM LANJUTAN ── -->
+<div class="modal-overlay" id="modal-lanjut">
+  <div class="modal-box">
+    <div class="modal-title">🔄 Pinjam Lanjutan</div>
+
+    <!-- Rantai peminjaman sebelumnya -->
+    <div id="lanjut-chain-wrap" style="margin-bottom:16px"></div>
+
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">
+      Barang akan diserahterimakan ke ruangan berikutnya tanpa harus kembali ke Radiologi terlebih dahulu.
+    </p>
+
+    <div class="form-group" style="margin-bottom:14px">
+      <label>Waktu Serah Terima <span class="required">*</span></label>
+      <input type="datetime-local" id="lanjut-waktu"/>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>Ruangan Penerima Berikutnya <span class="required">*</span></label>
+      <input type="text" id="lanjut-ruangan" placeholder="Contoh: Ranap 2"/>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>NIK Peminjam Baru <span class="required">*</span></label>
+      <input type="text" id="lanjut-nik" placeholder="NIK karyawan penerima"/>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>Nama Peminjam Baru <span class="required">*</span></label>
+      <input type="text" id="lanjut-nama" placeholder="Nama karyawan penerima"/>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>NIK Petugas Radiologi <span class="required">*</span></label>
+      <input type="text" id="lanjut-nik2" placeholder="NIK petugas"/>
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Nama Petugas Radiologi <span class="required">*</span></label>
+      <input type="text" id="lanjut-nama2" placeholder="Nama petugas"/>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeLanjutModal()">Batal</button>
+      <button class="btn btn-lanjut" id="btn-konfirm-lanjut" onclick="konfirmLanjut()">🔄 Konfirmasi Serah Terima</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── POPUP BLOKIR PEMINJAMAN AKTIF ── -->
+<div class="popup-blokir-overlay" id="popup-blokir">
+  <div class="popup-blokir-box">
+    <span class="popup-blokir-icon">🚫</span>
+    <div class="popup-blokir-title">Barang Masih Dipinjam!</div>
+    <div class="popup-blokir-body">
+      Barang berikut belum dikembalikan dan <strong>tidak dapat dipinjam kembali</strong> saat ini:
+    </div>
+    <ul class="popup-blokir-items" id="popup-blokir-items"></ul>
+    <div class="popup-blokir-hint">
+      💡 <strong>Tip:</strong> Jika ingin meneruskan peminjaman ke ruangan lain, gunakan fitur <strong>Pinjam Lanjutan</strong> di halaman Pengembalian.
+    </div>
+    <button class="btn btn-danger" onclick="closePopupBlokir()" style="width:100%;justify-content:center">
+      Mengerti, Tutup
+    </button>
+  </div>
+</div>
+
 <script>
 // ─── STATE ────────────────────────────────────────────
 let barangItems = [];
 let sigCtx = {};
 let allData = {};
 let selectedKey = null;
+let selectedLanjutKey = null;
 
 // ─── INIT ─────────────────────────────────────────────
 window.addEventListener("firebaseReady", () => {
   const { ref, onValue } = window._dbFns;
   const db = window._db;
-
   onValue(ref(db, "peminjaman"), (snap) => {
     allData = snap.val() || {};
     renderDashboard();
@@ -673,9 +810,9 @@ function toast(msg, type = 'success') {
   const tc = document.getElementById('toast-container');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  t.innerHTML = (type === 'success' ? '✅' : '❌') + ' ' + msg;
+  t.innerHTML = (type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌') + ' ' + msg;
   tc.appendChild(t);
-  setTimeout(() => { t.style.animation = 'slideOut .3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+  setTimeout(() => { t.style.animation = 'slideOut .3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
 // ─── BARANG ───────────────────────────────────────────
@@ -720,13 +857,11 @@ function initSig(id) {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   let drawing = false;
-
   function pos(e) {
     const r = canvas.getBoundingClientRect();
     const src = e.touches ? e.touches[0] : e;
     return { x: (src.clientX - r.left) * (canvas.width / r.width), y: (src.clientY - r.top) * (canvas.height / r.height) };
   }
-
   canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); });
   canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
   canvas.addEventListener('mouseup', () => drawing = false);
@@ -734,7 +869,6 @@ function initSig(id) {
   canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); }, { passive: false });
   canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }, { passive: false });
   canvas.addEventListener('touchend', () => drawing = false);
-
   sigCtx[id] = ctx;
 }
 
@@ -755,12 +889,52 @@ function isSigEmpty(id) {
 
 // ─── FORM RESET ───────────────────────────────────────
 function resetForm() {
-  ['tgl','jam','ruangan','nik1','nama1','nik2','nama2'].forEach(id => document.getElementById(id).value = '');
+  ['tgl','jam','ruangan','nik1','nama1','nik2','nama2'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
   clearSig('sig1'); clearSig('sig2');
   initBarang();
+  // Reset tgl/jam ke sekarang
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('tgl').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  document.getElementById('jam').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 }
 
-// ─── SIMPAN ───────────────────────────────────────────
+// ─── CEK BARANG AKTIF — BLOKIR DUPLIKAT ───────────────
+/**
+ * Cek apakah nama barang (substring match, case insensitive) 
+ * sedang dalam status Dipinjam di record manapun.
+ * Return array nama barang yang bentrok.
+ */
+function cekBarangAktif(namaList) {
+  const aktifBarang = []; // { nama, ruangan, peminjam }
+  Object.values(allData).forEach(v => {
+    if (v.status !== 'Dipinjam') return;
+    (v.barang || []).forEach(b => {
+      namaList.forEach(n => {
+        if (n && b.toLowerCase().includes(n.toLowerCase().substring(0, 15))) {
+          aktifBarang.push({ nama: b, ruangan: v.peminjam?.ruangan || '?', peminjam: v.peminjam?.nama || '?' });
+        }
+      });
+    });
+  });
+  return aktifBarang;
+}
+
+function showPopupBlokir(konflikList) {
+  const el = document.getElementById('popup-blokir-items');
+  el.innerHTML = konflikList.map(k =>
+    `<li><b>${k.nama}</b> — sedang di <b>${k.ruangan}</b> (oleh ${k.peminjam})</li>`
+  ).join('');
+  document.getElementById('popup-blokir').classList.add('open');
+}
+
+function closePopupBlokir() {
+  document.getElementById('popup-blokir').classList.remove('open');
+}
+
+// ─── SIMPAN PEMINJAMAN ────────────────────────────────
 async function simpanPeminjaman() {
   const tgl = document.getElementById('tgl').value;
   const jam = document.getElementById('jam').value;
@@ -778,26 +952,36 @@ async function simpanPeminjaman() {
   if (isSigEmpty('sig1')) { toast('Tanda tangan peminjam belum diisi!', 'error'); return; }
   if (isSigEmpty('sig2')) { toast('Tanda tangan petugas belum diisi!', 'error'); return; }
 
+  // ── CEK BARANG DUPLIKAT ──
+  const namaList = validBarang.map(b => b.val);
+  const konflik = cekBarangAktif(namaList);
+  if (konflik.length > 0) {
+    showPopupBlokir(konflik);
+    return;
+  }
+
   const btn = document.getElementById('btn-simpan');
   btn.innerHTML = '<span class="loader"></span> Menyimpan…'; btn.disabled = true;
 
   try {
-    const { ref, push, set, serverTimestamp } = window._dbFns;
+    const { ref, push, set } = window._dbFns;
     const db = window._db;
     const newRef = push(ref(db, 'peminjaman'));
     const payload = {
       tgl, jam,
-      barang: validBarang.map(b => b.val),
+      barang: namaList,
       peminjam: { ruangan, nik: nik1, nama: nama1, ttd: getSigData('sig1') },
       petugas: { nik: nik2, nama: nama2, ttd: getSigData('sig2') },
       status: 'Dipinjam',
       pinjamanSeq: 1,
       createdAt: Date.now(),
       waktuPinjam: `${tgl}T${jam}`,
+      rantai: [{ ruangan, nik: nik1, nama: nama1, waktu: `${tgl}T${jam}`, seq: 1 }],
     };
     await set(newRef, payload);
     toast('Peminjaman berhasil disimpan!');
     resetForm();
+    showPage('dashboard');
   } catch (e) {
     toast('Gagal menyimpan: ' + e.message, 'error');
   } finally {
@@ -815,28 +999,41 @@ function renderPengembalian() {
   }
 
   el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Barang</th><th>Peminjam</th><th>Ruangan</th><th>Waktu Pinjam</th><th>Lama</th><th>Aksi</th></tr></thead>
+    <thead><tr>
+      <th>Barang</th>
+      <th>Peminjam Saat Ini</th>
+      <th>Ruangan</th>
+      <th>Waktu Pinjam</th>
+      <th>Lama</th>
+      <th>Aksi</th>
+    </tr></thead>
     <tbody>
       ${aktif.map(([k, v]) => {
         const lama = getDurStr(v.waktuPinjam);
         const jam = getHours(v.waktuPinjam);
         const cls = jam > 24 ? 'overdue' : jam > 18 ? 'warning' : 'active';
         const label = jam > 24 ? 'Overdue' : jam > 18 ? 'Hampir Habis' : 'Aktif';
+        const seqBadge = (v.pinjamanSeq || 1) > 1
+          ? `<span class="badge lanjut" style="margin-left:4px">Lanjutan ke-${v.pinjamanSeq}</span>` : '';
         return `<tr>
-          <td><b style="font-size:13px">${(v.barang||[]).join(', ').substring(0,60)}…</b></td>
-          <td>${v.peminjam?.nama||'-'}<br><span style="font-size:11px;color:var(--text-3)">${v.peminjam?.nik||''}</span></td>
+          <td><b style="font-size:13px">${(v.barang||[]).join(', ').substring(0,55)}${((v.barang||[]).join(', ').length > 55 ? '…' : '')}</b></td>
+          <td>${v.peminjam?.nama||'-'}${seqBadge}<br><span style="font-size:11px;color:var(--text-3)">${v.peminjam?.nik||''} · ${v.peminjam?.ruangan||'-'}</span></td>
           <td>${v.peminjam?.ruangan||'-'}</td>
           <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${fmtWaktu(v.waktuPinjam)}</td>
           <td><span class="badge ${cls}">${lama} — ${label}</span></td>
-          <td><button class="btn btn-orange" style="padding:7px 14px;font-size:12px" onclick="openModal('${k}')">🔁 Kembalikan</button></td>
+          <td style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+            <button class="btn btn-orange" style="padding:7px 14px;font-size:12px" onclick="openModal('${k}')">🔁 Kembalikan</button>
+            <button class="btn btn-lanjut" style="padding:7px 14px;font-size:12px" onclick="openLanjutModal('${k}')">🔄 Pinjam Lanjutan</button>
+          </td>
         </tr>`;
       }).join('')}
     </tbody></table></div>`;
 }
 
-// ─── MODAL ────────────────────────────────────────────
+// ─── MODAL PENGEMBALIAN ───────────────────────────────
 function openModal(key) {
   selectedKey = key;
+  const v = allData[key];
   const now = new Date();
   const local = new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0,16);
   document.getElementById('waktu-kembali').value = local;
@@ -844,6 +1041,12 @@ function openModal(key) {
   document.getElementById('nama-kembali').value = '';
   document.getElementById('kondisi-kembali').value = 'Baik';
   document.getElementById('catatan-kembali').value = '';
+
+  // Info barang
+  const info = document.getElementById('modal-barang-info');
+  info.innerHTML = `<b>Barang:</b> ${(v.barang||[]).join(', ')}<br>
+    <span style="color:var(--text-3)">Dipinjam oleh <b>${v.peminjam?.nama||'-'}</b> (${v.peminjam?.ruangan||'-'}) sejak ${fmtWaktu(v.waktuPinjam)}</span>`;
+
   document.getElementById('modal-kembali').classList.add('open');
 }
 
@@ -882,6 +1085,93 @@ async function konfirmKembali() {
   }
 }
 
+// ─── MODAL PINJAM LANJUTAN ────────────────────────────
+function openLanjutModal(key) {
+  selectedLanjutKey = key;
+  const v = allData[key];
+  const now = new Date();
+  const local = new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+  document.getElementById('lanjut-waktu').value = local;
+  document.getElementById('lanjut-ruangan').value = '';
+  document.getElementById('lanjut-nik').value = '';
+  document.getElementById('lanjut-nama').value = '';
+  document.getElementById('lanjut-nik2').value = '';
+  document.getElementById('lanjut-nama2').value = '';
+
+  // Tampilkan rantai peminjaman sebelumnya
+  const rantai = v.rantai || [{ ruangan: v.peminjam?.ruangan, nama: v.peminjam?.nama, waktu: v.waktuPinjam, seq: 1 }];
+  const wrap = document.getElementById('lanjut-chain-wrap');
+  wrap.innerHTML = `
+    <div style="font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Rantai Peminjaman Barang: ${(v.barang||[]).join(', ').substring(0,40)}</div>
+    <div class="lanjut-chain">
+      ${rantai.map((r, i) => `
+        <div class="lanjut-chain-item">
+          <div class="chain-dot ${i === rantai.length - 1 ? 'current' : 'done'}"></div>
+          <div>
+            <b>${r.ruangan || '-'}</b> — ${r.nama || '-'}
+            <span style="font-size:11px;color:var(--text-3);margin-left:6px">${fmtWaktu(r.waktu)}</span>
+            ${i === rantai.length - 1 ? '<span class="badge active" style="margin-left:6px;font-size:10px">Sekarang</span>' : ''}
+          </div>
+        </div>
+      `).join('')}
+      <div class="lanjut-chain-item" style="opacity:.5">
+        <div class="chain-dot" style="background:var(--c-teal2);border:2px dashed var(--c-teal1)"></div>
+        <div style="font-size:12px;color:var(--text-3);font-style:italic">→ Ruangan berikutnya (isi di bawah)</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modal-lanjut').classList.add('open');
+}
+
+function closeLanjutModal() {
+  document.getElementById('modal-lanjut').classList.remove('open');
+  selectedLanjutKey = null;
+}
+
+async function konfirmLanjut() {
+  const waktu = document.getElementById('lanjut-waktu').value;
+  const ruangan = document.getElementById('lanjut-ruangan').value.trim();
+  const nik = document.getElementById('lanjut-nik').value.trim();
+  const nama = document.getElementById('lanjut-nama').value.trim();
+  const nik2 = document.getElementById('lanjut-nik2').value.trim();
+  const nama2 = document.getElementById('lanjut-nama2').value.trim();
+
+  if (!waktu || !ruangan || !nik || !nama || !nik2 || !nama2) {
+    toast('Lengkapi semua data serah terima!', 'error'); return;
+  }
+
+  const btn = document.getElementById('btn-konfirm-lanjut');
+  btn.innerHTML = '<span class="loader"></span> Memproses…'; btn.disabled = true;
+
+  try {
+    const { ref, update } = window._dbFns;
+    const db = window._db;
+    const v = allData[selectedLanjutKey];
+    const seqLama = v.pinjamanSeq || 1;
+    const rantaiLama = v.rantai || [{ ruangan: v.peminjam?.ruangan, nama: v.peminjam?.nama, waktu: v.waktuPinjam, seq: 1 }];
+
+    const rantaiBaru = [...rantaiLama, { ruangan, nik, nama, waktu, seq: seqLama + 1 }];
+
+    await update(ref(db, `peminjaman/${selectedLanjutKey}`), {
+      // Update peminjam aktif ke pemegang baru
+      peminjam: { ruangan, nik, nama },
+      petugas: { nik: nik2, nama: nama2 },
+      waktuPinjam: waktu,
+      pinjamanSeq: seqLama + 1,
+      rantai: rantaiBaru,
+      status: 'Dipinjam',
+    });
+
+    toast(`Berhasil diserahterimakan ke ${ruangan}!`);
+    closeLanjutModal();
+  } catch (e) {
+    toast('Gagal: ' + e.message, 'error');
+  } finally {
+    btn.innerHTML = '🔄 Konfirmasi Serah Terima'; btn.disabled = false;
+  }
+}
+
 // ─── DASHBOARD ────────────────────────────────────────
 function renderDashboard() {
   const entries = Object.values(allData);
@@ -894,7 +1184,6 @@ function renderDashboard() {
   document.getElementById('s-total').textContent = entries.length;
   document.getElementById('s-overdue').textContent = overdue.length;
 
-  // Table
   const tbody = document.getElementById('tbl-body');
   if (!entries.length) {
     tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="ei">📭</div><p>Belum ada data</p></div></td></tr>';
@@ -906,9 +1195,10 @@ function renderDashboard() {
       const cls = pct > 100 ? 'danger' : pct > 75 ? 'warn' : 'safe';
       const badge = v.status === 'Dikembalikan' ? 'returned' : jam > 24 ? 'overdue' : 'active';
       const lbl = v.status === 'Dikembalikan' ? 'Dikembalikan' : jam > 24 ? 'Overdue' : 'Aktif';
+      const seqLabel = (v.pinjamanSeq || 1) > 1 ? ` <span class="badge lanjut" style="font-size:10px">×${v.pinjamanSeq}</span>` : '';
       return `<tr>
         <td style="max-width:160px;font-size:12px">${(v.barang||[]).join(', ').substring(0,50)}</td>
-        <td style="font-size:12px">${v.peminjam?.nama||'-'}</td>
+        <td style="font-size:12px">${v.peminjam?.nama||'-'}${seqLabel}</td>
         <td style="font-size:12px">${v.peminjam?.ruangan||'-'}</td>
         <td>
           ${v.status === 'Dikembalikan' ? '<span style="font-size:12px;color:var(--text-3)">—</span>' : `
@@ -966,12 +1256,10 @@ function fmtWaktu(waktu) {
 
 // ─── STARTUP ──────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // Set default date/time
   const now = new Date();
   const pad = n => String(n).padStart(2,'0');
   document.getElementById('tgl').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
   document.getElementById('jam').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
   initBarang();
   initSig('sig1');
   initSig('sig2');
